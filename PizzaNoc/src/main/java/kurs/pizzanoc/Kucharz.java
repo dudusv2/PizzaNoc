@@ -7,7 +7,14 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.System.exit;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
+import javax.swing.table.TableColumnModel;
+
+
+
 
 //Panel kucharza / pracownika
 public class Kucharz extends JFrame implements ActionListener {
@@ -37,12 +44,23 @@ public class Kucharz extends JFrame implements ActionListener {
     private JButton bdodaj;
     private JButton border;
     private JButton bwydano;
+    private JButton wyslaneZam;
+    private JButton odmowioneZam;
+    private JButton odebraneZam;
+    private JButton nieodebraneZam;
+
+    private JButton orderTest;
+
+    private OrdersTable zamowienia;
 
     private final String[] ingridient = {"brak", "Sos", "Ser", "Oliwki", "Kiełbasa", "Jarmuż"};
     private final String[] Pizza = {"Pizza", "Margarita", "Cztery Sery", "Wiejska", "Farmerska", "Hawajska"};
 
-    Kucharz() {
+    private PizzaNoc pizzanoc;
+
+    Kucharz(PizzaNoc p) {
         super("PizzaNoc - Baza Danych");
+        this.pizzanoc = p;
 
         pizze = new ArrayList<>();
         dodatki = new ArrayList<>();
@@ -51,8 +69,17 @@ public class Kucharz extends JFrame implements ActionListener {
 
         setLayout(null);
         setBackground(new Color(10, 20, 30));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(900, 600);
+
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                pizzanoc.mysql().disconnect();
+                e.getWindow().dispose();
+            }
+        });
+
+        setSize(1200, 600);
 
         JLabel logo = new JLabel("Wprowadz zamówienie ");
         int style = Font.BOLD;
@@ -161,30 +188,42 @@ public class Kucharz extends JFrame implements ActionListener {
         border.addActionListener(this);
         add(border);
 
+
+
+
+
+
         JLabel lza = new JLabel("Zamówienia");
         lza.setFont(font);
         lza.setForeground(Color.RED);
         lza.setBounds(530, 20, 400, 50);
         add(lza);
-        tforders = new JTextField();
-        tforders.setBounds(480, 80, 380, 400);
-        add(tforders);
 
-        JLabel la = new JLabel("ID: ");
-        la.setFont(font1);
-        la.setForeground(Color.BLUE);
-        la.setBounds(470, 500, 60, 50);
-        add(la);
+        zamowienia = new OrdersTable();
+        zamowienia.setBounds(500, 100, 500, 500);
+        add(zamowienia);
 
-        taid = new JTextArea();
-        taid.setBounds(520, 510, 150, 30);
-        taid.setFont(font1);
-        add(taid);
+        wyslaneZam = new JButton("WYSłANE");
+        wyslaneZam.setBounds(1000, 200, 150, 50);
+        wyslaneZam.addActionListener(this);
+        add(wyslaneZam);
+        odmowioneZam = new JButton("ODMÓWIONE");
+        odmowioneZam.setBounds(1000, 260, 150, 50);
+        odmowioneZam.addActionListener(this);
+        add(odmowioneZam);
+        odebraneZam = new JButton("ODEBRANE");
+        odebraneZam.setBounds(1000, 320, 150, 50);
+        odebraneZam.addActionListener(this);
+        add(odebraneZam);
+        nieodebraneZam = new JButton("NIEODEBRANE");
+        nieodebraneZam.setBounds(1000, 380, 150, 50);
+        nieodebraneZam.addActionListener(this);
+        add(nieodebraneZam);
 
-        bwydano = new JButton("Wydano");
-        bwydano.addActionListener(this);
-        bwydano.setBounds(680, 500, 200, 50);
-        add(bwydano);
+        orderTest = new JButton("select test");
+        orderTest.setBounds(1000, 50, 150, 50);
+        orderTest.addActionListener(this);
+        add(orderTest);
     }
 
 
@@ -192,6 +231,13 @@ public class Kucharz extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Object o = e.getSource();
+
+        if (o == orderTest){
+            pizzanoc.mysql().getOrders("SELECT * FROM orders");
+            //zamowienia.model.setData(newdata);
+            //zamowienia.rep();
+        }
+
         if (o == bdodaj){  //Dodawanie pizzy
             pizze.removeAll(pizze);
             dodatki.removeAll(dodatki);

@@ -1,23 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package kurs.pizzanoc;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.lang.System.exit;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  *
  * @author jakub
+ * @author Amadeusz
+ *
  */
+
 public class PizzaNoc {
 
     private StartingWindow start;
@@ -25,29 +19,37 @@ public class PizzaNoc {
     private DostawcaPizzy dostawcaPizzy;
     private Kucharz kucharz;
 
+    private MySQLConnect mysqlConnect;
+
     PizzaNoc() {
+        mysqlConnect = new MySQLConnect();
+
         start = new StartingWindow(this);
         start.setLocationRelativeTo(null);
         start.setVisible(true);
         start.setResizable(false);
     }
 
+    public MySQLConnect mysql() {
+        return this.mysqlConnect;
+    }
+
     public void showDostawcaPizzy() {
-        dostawcaPizzy = new DostawcaPizzy();
+        dostawcaPizzy = new DostawcaPizzy(this);
         dostawcaPizzy.setLocationRelativeTo(null);
         dostawcaPizzy.setVisible(true);
         dostawcaPizzy.setResizable(false);
     }
 
     public void showKucharz() {
-        kucharz = new Kucharz();
+        kucharz = new Kucharz(this);
         kucharz.setLocationRelativeTo(null);
         kucharz.setVisible(true);
         kucharz.setResizable(false);
     }
 
     public void showDostawcaTowaru() {
-        dostawcaTowaru = new DostawcaTowaru();
+        dostawcaTowaru = new DostawcaTowaru(this);
         dostawcaTowaru.setLocationRelativeTo(null);
         dostawcaTowaru.setVisible(true);
         dostawcaTowaru.setResizable(false);

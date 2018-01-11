@@ -30,13 +30,23 @@ public class DostawcaTowaru extends JFrame implements ActionListener {
 
     private final String[] ingridient = {"brak", "Sos", "Ser", "Oliwki", "Kiełbasa", "Jarmuż"};
 
-    DostawcaTowaru() {
+    private PizzaNoc pizzanoc;
+    DostawcaTowaru(PizzaNoc p) {
         super("PizzaNoc - Baza Danych");
+        this.pizzanoc = p;
 
         setLayout(null);
         setSize(820, 530);
         setBackground(new Color(10, 20, 30));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                pizzanoc.mysql().disconnect();
+                e.getWindow().dispose();
+            }
+        });
 
         JLabel logo = new JLabel("Wprowadz dostawę lub ");
         int style = Font.BOLD;

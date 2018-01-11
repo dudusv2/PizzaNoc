@@ -14,12 +14,23 @@ public class DostawcaPizzy extends JFrame implements ActionListener {
 
     private JButton borderdone;
 
-    DostawcaPizzy() {
+    private PizzaNoc pizzanoc;
+    DostawcaPizzy(PizzaNoc p) {
         super("PizzaNoc - Baza Danych");
+        this.pizzanoc = p;
 
         setLayout(null);
         setSize(450, 600);
         setBackground(new Color(10, 20, 30));
+
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                pizzanoc.mysql().disconnect();
+                e.getWindow().dispose();
+            }
+        });
 
         int style = Font.BOLD;
         Font font = new Font("Garamond", style, 30);
