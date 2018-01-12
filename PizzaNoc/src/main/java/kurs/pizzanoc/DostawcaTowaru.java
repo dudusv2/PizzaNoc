@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.System.exit;
+import java.util.Arrays;
 
 //Panel dla dostawcy towaru
 public class DostawcaTowaru extends JFrame implements ActionListener {
+
     private JButton bneeded;
     private JButton bconst;
     private JButton bedit;
@@ -29,12 +31,21 @@ public class DostawcaTowaru extends JFrame implements ActionListener {
     private JComboBox cbproducts;
 
     private final String[] ingridient = {"brak", "Sos", "Ser", "Oliwki", "Kiełbasa", "Jarmuż"};
+   
+    private List<String> orderList;
+  
 
     private PizzaNoc pizzanoc;
+
     DostawcaTowaru(PizzaNoc p) {
         super("PizzaNoc - Baza Danych");
         this.pizzanoc = p;
-
+          try {
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception ex) {
+          
+        } 
+        orderList= new ArrayList<>();
         setLayout(null);
         setSize(820, 530);
         setBackground(new Color(10, 20, 30));
@@ -155,35 +166,57 @@ public class DostawcaTowaru extends JFrame implements ActionListener {
         bcheckorder.setBounds(540, 380, 250, 80);
         add(bcheckorder);
     }
+    
     // Obsługa zdarzeń
     @Override
     public void actionPerformed(ActionEvent e) {
         Object o = e.getSource();
+
         if (o == bneeded) {   // Sprawdza zaopatrzenie dla
             //Todo stan zapotrzebowania z bazy wyświetlające się w okienku JDialog
+            String ordered_products[] = pizzanoc.mysql().getOrderedProductsID(
+                    "SELECT name,quanitity_in_stock FROM ingridients");
+            JOptionPane.showMessageDialog(null, "produkty  ", ordered_products.toString(), JOptionPane.INFORMATION_MESSAGE);
+            JFrame frame = new JFrame("Szczegoly zamowienia");
+            JOptionPane.showMessageDialog(frame, ordered_products.toString());
             return;
         }
         if (o == bdodaj1) { //Dodanie produktu
+            String prod=taprod.getText();
+            String vol=tavol.getText();
+           
+            orderList.add(prod);
+            orderList.add(vol);
+           
             return;
         }
         if (o == bcofni) {  //Cofnięcie produktu
+            orderList.remove(orderList.size()-1);
+            orderList.remove(orderList.size()-1);
             return;
         }
 
         if (o == bconst) { //Stałe zamówienie
+            pizzanoc.mysql().constOrder();
             return;
         }
 
         if (o == bdeleteorder) { //Usuń zamowienie
+            orderList.removeAll(orderList);
             return;
         }
         if (o == bcheckorder) { //Sprawdz zamówienie
+            JOptionPane.showMessageDialog(null, "zamowienie  ", orderList.toString(), JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         if (o == bedit) {  //Edytuj stałe zamówienie
             return;
         }
         if (o == bdostawa) {  // Dodaj zamowienie do bazy
+            for (int i = 0; i < (orderList.size()-1)/2; i++) {
+                pizzanoc.mysql().addOrder(orderList.get(i),orderList.get(i+1));
+            }
+             
             return;
         }
     }

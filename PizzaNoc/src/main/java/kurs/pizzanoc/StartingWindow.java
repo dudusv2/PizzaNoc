@@ -7,10 +7,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 import static java.lang.System.exit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class StartingWindow extends JFrame implements ActionListener{
     private JButton bLogin;
@@ -28,11 +28,15 @@ public class StartingWindow extends JFrame implements ActionListener{
         super("PizzaNoc - Baza Danych");
         this.pizzanoc = p;
 
-        this.setBackground(new Color(10, 20, 30));
+        this.getContentPane().setBackground(new Color(10, 20, 30));
         this.setLayout(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-
+       
+        try {
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception ex) {
+          
+        } 
         setSize(620, 450);
         bLogin = new JButton("Login");
         bLogin.addActionListener(this);
@@ -46,12 +50,12 @@ public class StartingWindow extends JFrame implements ActionListener{
         add(bLogin);
         add(bReset);
         add(bExit);
-
+        /*
         test = new JButton("TEST");
         test.addActionListener(this);
         test.setBounds(400, 50, 180, 50);
         add(test);
-
+        */
         JLabel logo = new JLabel("Witaj w Pizza Noc");
         int style = Font.BOLD;
         Font font = new Font("Garamond", style, 35);
@@ -120,7 +124,7 @@ public class StartingWindow extends JFrame implements ActionListener{
                 this.dispose();
                 return;
             }
-            if (login.getText().contains("Kucharz")) {
+            if (login.getText().contains("kucharz")) {
                 pizzanoc.showKucharz();
                 this.dispose();
                 return;
@@ -137,6 +141,7 @@ public class StartingWindow extends JFrame implements ActionListener{
         }
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         Object o = e.getSource();
         if (o == test) { //Przycisk Login panel logowania

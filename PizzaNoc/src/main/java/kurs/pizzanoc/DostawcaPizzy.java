@@ -9,13 +9,18 @@ import java.awt.event.ActionListener;
 public class DostawcaPizzy extends JFrame implements ActionListener {
 
     private OrdersTable zamowienia;
-    private JButton refresh;
+    private JButton refresh,bodebrane,bnodebrane;
 
     private PizzaNoc pizzanoc;
     DostawcaPizzy(PizzaNoc p) {
         super("PizzaNoc - Baza Danych");
         this.pizzanoc = p;
 
+          try {
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception ex) {
+          
+        } 
         setLayout(null);
         setSize(550, 600);
         setBackground(new Color(10, 20, 30));
@@ -46,13 +51,36 @@ public class DostawcaPizzy extends JFrame implements ActionListener {
         refresh.setBounds(350, 20, 150, 50);
         refresh.addActionListener(this);
         add(refresh);
+        
+        bodebrane = new JButton("odebrane");
+        bodebrane.setBounds(40, 520, 150, 50);
+        bodebrane.addActionListener(this);
+        add(bodebrane);
+        
+        bnodebrane = new JButton("nieodebrane");
+        bnodebrane.setBounds(220, 520, 150, 50);
+        bnodebrane.addActionListener(this);
+        add(bnodebrane);
+        
+        
+    }
+      public void selectOrd() {
+        int numOfRows = pizzanoc.mysql().getRowNumbers("orders");
+        zamowienia.model.setData(pizzanoc.mysql().getOrders("SELECT * FROM orders", numOfRows));
     }
     // Obsługa zdarzeń
     @Override
     public void actionPerformed(ActionEvent e) {
         Object o = e.getSource();
-        if (o == refresh) {
-            //TODO: Refresh orders table
+        
+        if(o==bodebrane){
+            pizzanoc.mysql().updateOrders("odebrane", zamowienia.getIDofSelectedRow());
+            selectOrd();
         }
+        if(o==bnodebrane){
+            pizzanoc.mysql().updateOrders("nieodebrane", zamowienia.getIDofSelectedRow());
+            selectOrd();
+        }
+        
     }
 }

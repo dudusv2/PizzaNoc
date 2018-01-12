@@ -10,6 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Properties;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MySQLConnect {
     private String DATABASE_DRIVER = "com.mysql.jdbc.Driver";
@@ -17,7 +19,7 @@ public class MySQLConnect {
     private String USERNAME = "";
     private String PASSWORD = "";
     private String MAX_POOL = "250";
-
+  
     private Statement stmt = null;
 
     private ResultSet rs = null;
@@ -39,7 +41,7 @@ public class MySQLConnect {
     }
 
     public String correctData(String usr, String pass) {
-        if ((usr.equals("Kucharz") && pass.equals("cook")) ||
+        if ((usr.equals("kucharz") && pass.equals("cook")) ||
                 (usr.equals("DostawcaTowaru") && pass.equals("towar")) ||
                 (usr.equals("DostawcaPizzy") && pass.equals("pizzaboy")) ||
                 (usr.equals("admin") && pass.equals("pizzanoc"))) {
@@ -119,6 +121,7 @@ public class MySQLConnect {
     public int getRowNumbers (String table_name) {
         try {
             String query = "SELECT count(*) FROM " + table_name;
+            System.out.println("Psinka");
             stmt = connection.createStatement();
             rs = stmt.executeQuery(query);
 
@@ -291,7 +294,109 @@ public class MySQLConnect {
             }
         }
     }
+    public String getneededProduct(String q){
+        try {
+            stmt = connection.createStatement();
+             rs = stmt.executeQuery(q);
+             rsmd = rs.getMetaData();
+             
+              String needed_products="";
+            while (rs.next()) {
+                String name = rs.getString(1);
+                needed_products += name;
+                needed_products += " - ";
+                String quanity = rs.getString(2);
+                needed_products += quanity;
+                needed_products += " - ";
+               
+            }
+            return needed_products; 
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            return null;
+        }
+         finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException sqlEx) {
+                } // ignore
+                rs = null;
+            }
 
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException sqlEx) {
+                } // ignore
+                stmt = null;
+            }
+        }
+         
+    }
+    public void addOrder(String product, String quanity){
+        try {
+            stmt = connection.createStatement();
+            String query = "INSERT INTO igridients(quantity_in_stock) VALUES ("+quanity+") Where name="+product+"";
+            stmt.executeUpdate(query);
+            
+            
+        }catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException sqlEx) {
+                } // ignore
+                rs = null;
+            }
+
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException sqlEx) {
+                } // ignore
+                stmt = null;
+            }
+        }
+        
+    }
+    public void constOrder(){
+        try {
+            stmt = connection.createStatement();
+            String query = "CALL constOrder(@n)";
+            stmt.executeUpdate(query);
+            
+            
+        }catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException sqlEx) {
+                } // ignore
+                rs = null;
+            }
+
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException sqlEx) {
+                } // ignore
+                stmt = null;
+            }
+        }
+        
+        
+    }
     public void addOrder(String adres, String telefon, String terminal, String zamowienie) {
         try {
             stmt = connection.createStatement();
