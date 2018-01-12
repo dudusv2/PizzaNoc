@@ -7,9 +7,12 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import java.util.Arrays;
 
 import javax.swing.table.TableColumnModel;
 
@@ -49,7 +52,7 @@ public class Kucharz extends JFrame implements ActionListener {
     private JButton odebraneZam;
     private JButton nieodebraneZam;
 
-    private JButton orderTest;
+    private JButton checkOrder;
 
     private OrdersTable zamowienia;
 
@@ -113,7 +116,7 @@ public class Kucharz extends JFrame implements ActionListener {
         cbpizza.setBounds(80, 80, 120, 50);
         add(cbpizza);
 
-        JLabel ldel = new JLabel("Własna kompozycja:");
+        /*JLabel ldel = new JLabel("Własna kompozycja:");
         ldel.setFont(font1);
         ldel.setForeground(Color.BLUE);
         ldel.setBounds(20, 150, 250, 50);
@@ -137,7 +140,7 @@ public class Kucharz extends JFrame implements ActionListener {
 
         cbi5 = new JComboBox(ingridient);
         cbi5.setBounds(340, 200, 80, 50);
-        add(cbi5);
+        add(cbi5);*/
 
         JLabel lil = new JLabel("Ilość:");
         lil.setFont(font1);
@@ -200,8 +203,9 @@ public class Kucharz extends JFrame implements ActionListener {
         add(lza);
 
         zamowienia = new OrdersTable();
-        zamowienia.setBounds(500, 100, 500, 500);
+        zamowienia.setBounds(450, 100, 500, 500);
         add(zamowienia);
+        selectOrd();
 
         wyslaneZam = new JButton("WYSłANE");
         wyslaneZam.setBounds(1000, 200, 150, 50);
@@ -220,23 +224,60 @@ public class Kucharz extends JFrame implements ActionListener {
         nieodebraneZam.addActionListener(this);
         add(nieodebraneZam);
 
-        orderTest = new JButton("select test");
-        orderTest.setBounds(1000, 50, 150, 50);
-        orderTest.addActionListener(this);
-        add(orderTest);
+        checkOrder = new JButton("SZCZEGOLY");
+        checkOrder.setBounds(1000, 50, 150, 50);
+        checkOrder.addActionListener(this);
+        add(checkOrder);
     }
 
+    public void selectOrd() {
+        int numOfRows = pizzanoc.mysql().getRowNumbers("orders");
+        zamowienia.model.setData(pizzanoc.mysql().getOrders("SELECT * FROM orders", numOfRows));
+    }
 
     // Obsługa zdarzeń
     @Override
     public void actionPerformed(ActionEvent e) {
         Object o = e.getSource();
+        if(o == checkOrder) {
+            String tempID = String.valueOf(zamowienia.getIDofSelectedRow());
+            System.out.println(tempID);
+            String ordered_products_id[] = pizzanoc.mysql().getOrderedProductsID(
+                    "SELECT product_ID FROM ordered_products WHERE order_id = " + tempID);
 
-        if (o == orderTest){
-            pizzanoc.mysql().getOrders("SELECT * FROM orders");
-            //zamowienia.model.setData(newdata);
-            //zamowienia.rep();
+            int count;
+            for(int i=0;;i++) {
+                if (ordered_products_id[i].substring(0, 1).equals("n")) {
+                    count = Integer.parseInt(ordered_products_id[i].substring(2));
+                    break;
+                }
+            }
+
+            String ord_products="";
+            for(int i=0;i<count;i++) {
+                ord_products += pizzanoc.mysql().getProducts("SELECT name, price, diameter FROM products WHERE ID = " + ordered_products_id[i]);
+                ord_products += "\n";
+            }
+
+            JFrame frame = new JFrame("Szczegoly zamowienia");
+            JOptionPane.showMessageDialog(frame,ord_products);
         }
+
+        if (o == wyslaneZam){
+            pizzanoc.mysql().updateOrders("wysłane", zamowienia.getIDofSelectedRow());
+            selectOrd();
+        }if (o == odmowioneZam){
+            pizzanoc.mysql().updateOrders("odmówione", zamowienia.getIDofSelectedRow());
+            selectOrd();
+        }if (o == odebraneZam){
+            pizzanoc.mysql().updateOrders("odebrane", zamowienia.getIDofSelectedRow());
+            selectOrd();
+        }if (o == nieodebraneZam){
+            pizzanoc.mysql().updateOrders("nieodebrane", zamowienia.getIDofSelectedRow());
+            selectOrd();
+        }
+
+
 
         if (o == bdodaj){  //Dodawanie pizzy
             pizze.removeAll(pizze);

@@ -1,5 +1,6 @@
 CREATE USER 'Kucharz'@'localhost' IDENTIFIED BY 'cook';
 GRANT SELECT, INSERT, UPDATE ON pizzanoc.orders TO 'Kucharz'@'localhost';
+GRANT SELECT, INSERT, UPDATE ON pizzanoc.ordered_products TO 'Kucharz'@'localhost';
 GRANT SELECT ON pizzanoc.products TO 'Kucharz'@'localhost';
 GRANT INSERT ON pizzanoc.clients TO 'Kucharz'@'localhost';
 GRANT UPDATE ON pizzanoc.ingredients TO 'Kucharz'@'localhost';
