@@ -7,20 +7,13 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import java.util.Arrays;
-
-import javax.swing.table.TableColumnModel;
-
-
-
 
 //Panel kucharza / pracownika
 public class Kucharz extends JFrame implements ActionListener {
+
     private List<String> pizze;
     private List<String> dodatki;
     private List<String> orderList;
@@ -46,6 +39,8 @@ public class Kucharz extends JFrame implements ActionListener {
     private JButton odmowioneZam;
     private JButton odebraneZam;
     private JButton nieodebraneZam;
+    private JButton dbimport;
+    private JButton dbexport;
 
     private JButton checkOrder;
 
@@ -53,8 +48,8 @@ public class Kucharz extends JFrame implements ActionListener {
 
     //private final String[] ingridient = {"brak", "Sos", "Ser", "Oliwki", "Kiełbasa", "Jarmuż"};
     private final String[] Pizza = {"Margherita", "Funghi", "Prosciutto", "Salami", "Capriciosa",
-                                    "Hawajska", "Gambino", "Nocny Marek", "Vegetariana", "Kolorowa",
-                                    "Chilli", "Droga Mleczna", "Księżycowa", "Cztery Sery", "Mamma Mia!"};
+        "Hawajska", "Gambino", "Nocny Marek", "Vegetariana", "Kolorowa",
+        "Chilli", "Droga Mleczna", "Księżycowa", "Cztery Sery", "Mamma Mia!"};
     private final String[] rozmiar = {"32", "45"};
 
     private final String[] termBox = {"tak", "nie"};
@@ -72,6 +67,11 @@ public class Kucharz extends JFrame implements ActionListener {
         orderList = new ArrayList<>();
         order = new ArrayList<>();
 
+          try {
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception ex) {
+          
+        } 
         setLayout(null);
         this.setBackground(new Color(10, 20, 30));
         this.getContentPane().setBackground(new Color(10, 20, 30));
@@ -124,7 +124,7 @@ public class Kucharz extends JFrame implements ActionListener {
         zamLabel.setBounds(10, 150, 100, 50);
         add(zamLabel);
 
-        this.tempText="/";
+        this.tempText = "/";
         zamArea = new JTextArea();
         JScrollPane sp = new JScrollPane(zamArea);
         sp.setBounds(100, 150, 320, 50);
@@ -236,6 +236,15 @@ public class Kucharz extends JFrame implements ActionListener {
         checkOrder.setBounds(1000, 50, 150, 50);
         checkOrder.addActionListener(this);
         add(checkOrder);
+        
+        dbimport = new JButton("Import");
+        dbimport.setBounds(1000, 440, 150, 50);
+        dbimport.addActionListener(this);
+        add(dbimport);
+        dbexport = new JButton("Export");
+        dbexport.setBounds(1000, 500, 150, 50);
+        dbexport.addActionListener(this);
+        add(dbexport);
     }
 
     public void selectOrd() {
@@ -257,46 +266,47 @@ public class Kucharz extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Object o = e.getSource();
-        if(o == checkOrder) {
+        if (o == checkOrder) {
             String tempID = String.valueOf(zamowienia.getIDofSelectedRow());
             String ordered_products_id[] = pizzanoc.mysql().getOrderedProductsID(
                     "SELECT product_ID FROM ordered_products WHERE order_id = " + tempID);
 
             int count;
-            for(int i=0;;i++) {
+            for (int i = 0;; i++) {
                 if (ordered_products_id[i].substring(0, 1).equals("n")) {
                     count = Integer.parseInt(ordered_products_id[i].substring(2));
                     break;
                 }
             }
 
-            String ord_products="";
-            for(int i=0;i<count;i++) {
+            String ord_products = "";
+            for (int i = 0; i < count; i++) {
                 ord_products += pizzanoc.mysql().getProducts("SELECT name, price, diameter FROM products WHERE ID = " + ordered_products_id[i]);
                 ord_products += "\n";
             }
 
             JFrame frame = new JFrame("Szczegoly zamowienia");
-            JOptionPane.showMessageDialog(frame,ord_products);
+            JOptionPane.showMessageDialog(frame, ord_products);
         }
 
-        if (o == wyslaneZam){
+        if (o == wyslaneZam) {
             pizzanoc.mysql().updateOrders("wysłane", zamowienia.getIDofSelectedRow());
             selectOrd();
-        }if (o == odmowioneZam){
+        }
+        if (o == odmowioneZam) {
             pizzanoc.mysql().updateOrders("odmówione", zamowienia.getIDofSelectedRow());
             selectOrd();
-        }if (o == odebraneZam){
+        }
+        if (o == odebraneZam) {
             pizzanoc.mysql().updateOrders("odebrane", zamowienia.getIDofSelectedRow());
             selectOrd();
-        }if (o == nieodebraneZam){
+        }
+        if (o == nieodebraneZam) {
             pizzanoc.mysql().updateOrders("nieodebrane", zamowienia.getIDofSelectedRow());
             selectOrd();
         }
 
-
-
-        if (o == bdodaj){  //Dodawanie pizzy
+        if (o == bdodaj) {  //Dodawanie pizzy
             String pizza = (String) cbpizza.getSelectedItem();
             String rozmiar = (String) cbrozmiar.getSelectedItem();
 
@@ -307,9 +317,15 @@ public class Kucharz extends JFrame implements ActionListener {
 
             zamArea.setText(tempText);
         }
+        if (o==dbimport) {
+           
+        }
+         if (o==dbexport) {
+            String path="C:/Users/mypc/Desktop/tesst/back.sql";
+            String dumpCommand = "mysqldump -u root gestiondestock --result-file="+path;
+        }
 
-
-        if(o == border) {
+        if (o == border) {
             //Adres:
             String miasto = miastoArea.getText();
             String ulica = ulicaArea.getText();
@@ -320,14 +336,14 @@ public class Kucharz extends JFrame implements ActionListener {
             String terminal = (String) cbterminal.getSelectedItem();
             String zamowienie = zamArea.getText();
 
-            String adress = ulica+"/"+dom+"/"+mieszkanie+"/"+miasto;
+            String adress = ulica + "/" + dom + "/" + mieszkanie + "/" + miasto;
             pizzanoc.mysql().addOrder(adress, telefon, terminal, zamowienie);
 
             selectOrd();
             clearPanel();
         }
 
-        if(o == bwyczysc) {
+        if (o == bwyczysc) {
             clearPanel();
         }
     }
