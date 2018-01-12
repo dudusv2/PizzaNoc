@@ -19,7 +19,9 @@ public class MySQLConnect {
     private String MAX_POOL = "250";
 
     private Statement stmt = null;
+
     private ResultSet rs = null;
+    private ResultSet rs2 = null;
     private ResultSetMetaData rsmd = null;
 
     private Connection connection;
@@ -293,6 +295,11 @@ public class MySQLConnect {
     public void addOrder(String adres, String telefon, String terminal, String zamowienie) {
         try {
             stmt = connection.createStatement();
+            Statement stmt2 = connection.createStatement();
+            Statement stmt3 = connection.createStatement();
+            Statement stmt4 = connection.createStatement();
+            Statement stmt5 = connection.createStatement();
+
             //GET HIGHEST ID
             rs = stmt.executeQuery("SELECT ID FROM orders ORDER BY ID DESC LIMIT 0, 1");
             rsmd = rs.getMetaData();
@@ -301,23 +308,33 @@ public class MySQLConnect {
             int id = Integer.parseInt(currentID)+1;
             currentID = Integer.toString(id);
 
-            String query = "INSERT INTO orders(ID, data, status, card_payment, fullpirce, phone_number, adres) VALUES ( "+currentID+" , now() , 'przyjęte' , '"+terminal+"' , 1 , '"+telefon+"' , '"+adres+"' )";
-            stmt.executeUpdate(query);
+            String query;
 
             String qqq;
             String[] partsZamowienie = zamowienie.split("/");
             String[] current;
 
+            float fullprice=0;
+
+            query = "INSERT INTO orders(ID, data, status, card_payment, fullpirce, phone_number, adres) VALUES ( "+currentID+" , now() , 'przyjęte' , '"+terminal+"' , 0 , '"+telefon+"' , '"+adres+"' )";
+            stmt2.executeUpdate(query);
+
             for(int i=1; i<partsZamowienie.length;i++) {
                 current = partsZamowienie[i].split(",");
-                qqq = "SELECT ID FROM products WHERE name LIKE '"+current[0]+"' AND diameter = "+current[1];
-
-                rs = stmt.executeQuery(qqq);
-                rsmd = rs.getMetaData();
-                rs.next();
-                query = "INSERT INTO ordered_products VALUES ("+currentID+","+rs.getString(1)+")";
-                stmt.executeUpdate(query);
+                qqq = "SELECT ID,price FROM products WHERE name LIKE '"+current[0]+"' AND diameter = "+current[1];
+                rs2 = stmt3.executeQuery(qqq);
+                rsmd = rs2.getMetaData();
+                rs2.next();
+                query = "INSERT INTO ordered_products VALUES ("+currentID+","+rs2.getString(1)+")";
+                stmt4.executeUpdate(query);
+                fullprice += rs2.getFloat(2);
             }
+            String fullpriceString = Float.toString(fullprice);
+            query = "UPDATE orders SET fullpirce = "+fullpriceString+" WHERE ID ="+currentID;
+            stmt5.executeUpdate(query);
+
+
+
         } catch (SQLException ex) {
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
@@ -326,6 +343,13 @@ public class MySQLConnect {
             if (rs != null) {
                 try {
                     rs.close();
+                } catch (SQLException sqlEx) {
+                } // ignore
+                rs = null;
+            }
+            if (rs2 != null) {
+                try {
+                    rs2.close();
                 } catch (SQLException sqlEx) {
                 } // ignore
                 rs = null;

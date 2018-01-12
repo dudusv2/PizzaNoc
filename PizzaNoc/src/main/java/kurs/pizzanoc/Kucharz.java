@@ -250,6 +250,7 @@ public class Kucharz extends JFrame implements ActionListener {
         mieszkanieArea.setText("");
         domArea.setText("");
         phoneArea.setText("");
+        this.tempText="/";
     }
 
     // Obsługa zdarzeń
