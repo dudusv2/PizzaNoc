@@ -26,27 +26,22 @@ public class Kucharz extends JFrame implements ActionListener {
     private List<String> orderList;
     private List<String> order;
 
-    private JTextField tforder;
-    private JTextField tforders;
+    private JTextArea zamArea;
+    private JTextArea miastoArea;
+    private JTextArea ulicaArea;
+    private JTextArea mieszkanieArea;
+    private JTextArea domArea;
+    private JTextArea phoneArea;
 
-    private JTextArea taadres;
-    private JTextArea taid;
-
-    private JCheckBox terminal;
-
+    private JComboBox cbterminal;
     private JComboBox cbpizza;
-    private JComboBox cbi;
-    private JComboBox cbi1;
-    private JComboBox cbi2;
-    private JComboBox cbi3;
-    private JComboBox cbi4;
-    private JComboBox cbi5;
+    private JComboBox cbrozmiar;
 
     private JSpinner jsi;
 
     private JButton bdodaj;
     private JButton border;
-    private JButton bwydano;
+    private JButton bwyczysc;
     private JButton wyslaneZam;
     private JButton odmowioneZam;
     private JButton odebraneZam;
@@ -56,10 +51,17 @@ public class Kucharz extends JFrame implements ActionListener {
 
     private OrdersTable zamowienia;
 
-    private final String[] ingridient = {"brak", "Sos", "Ser", "Oliwki", "Kiełbasa", "Jarmuż"};
-    private final String[] Pizza = {"Pizza", "Margarita", "Cztery Sery", "Wiejska", "Farmerska", "Hawajska"};
+    //private final String[] ingridient = {"brak", "Sos", "Ser", "Oliwki", "Kiełbasa", "Jarmuż"};
+    private final String[] Pizza = {"Margherita", "Funghi", "Prosciutto", "Salami", "Capriciosa",
+                                    "Hawajska", "Gambino", "Nocny Marek", "Vegetariana", "Kolorowa",
+                                    "Chilli", "Droga Mleczna", "Księżycowa", "Cztery Sery", "Mamma Mia!"};
+    private final String[] rozmiar = {"32", "45"};
+
+    private final String[] termBox = {"tak", "nie"};
 
     private PizzaNoc pizzanoc;
+
+    private String tempText;
 
     Kucharz(PizzaNoc p) {
         super("PizzaNoc - Baza Danych");
@@ -71,7 +73,8 @@ public class Kucharz extends JFrame implements ActionListener {
         order = new ArrayList<>();
 
         setLayout(null);
-        setBackground(new Color(10, 20, 30));
+        this.setBackground(new Color(10, 20, 30));
+        this.getContentPane().setBackground(new Color(10, 20, 30));
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -102,99 +105,104 @@ public class Kucharz extends JFrame implements ActionListener {
         lpizza.setBounds(10, 80, 200, 50);
         add(lpizza);
 
-        JLabel ladd = new JLabel("Dodatek:");
-        ladd.setFont(font1);
-        ladd.setForeground(Color.BLUE);
-        ladd.setBounds(210, 80, 200, 50);
-        add(ladd);
-
-        cbi = new JComboBox(ingridient);
-        cbi.setBounds(310, 80, 130, 50);
-        add(cbi);
-
         cbpizza = new JComboBox(Pizza);
         cbpizza.setBounds(80, 80, 120, 50);
         add(cbpizza);
 
-        /*JLabel ldel = new JLabel("Własna kompozycja:");
-        ldel.setFont(font1);
-        ldel.setForeground(Color.BLUE);
-        ldel.setBounds(20, 150, 250, 50);
-        add(ldel);
-
-        cbi1 = new JComboBox(ingridient);
-        cbi1.setBounds(20, 200, 80, 50);
-        add(cbi1);
-
-        cbi2 = new JComboBox(ingridient);
-        cbi2.setBounds(100, 200, 80, 50);
-        add(cbi2);
-
-        cbi3 = new JComboBox(ingridient);
-        cbi3.setBounds(180, 200, 80, 50);
-        add(cbi3);
-
-        cbi4 = new JComboBox(ingridient);
-        cbi4.setBounds(260, 200, 80, 50);
-        add(cbi4);
-
-        cbi5 = new JComboBox(ingridient);
-        cbi5.setBounds(340, 200, 80, 50);
-        add(cbi5);*/
-
-        JLabel lil = new JLabel("Ilość:");
-        lil.setFont(font1);
-        lil.setForeground(Color.BLUE);
-        lil.setBounds(20, 270, 200, 50);
-        add(lil);
-
-        SpinnerModel model = new SpinnerNumberModel(1, 1, 10, 1);
-        jsi = new JSpinner(model);
-        jsi.setBounds(80, 270, 50, 50);
-        add(jsi);
+        cbrozmiar = new JComboBox(rozmiar);
+        cbrozmiar.setBounds(210, 80, 40, 50);
+        add(cbrozmiar);
 
         bdodaj = new JButton("Dodaj Pizze");
-        bdodaj.addActionListener(this);
-        bdodaj.setBounds(160, 270, 260, 50);
+        bdodaj.setBounds(260, 80, 150, 50);
         bdodaj.addActionListener(this);
         add(bdodaj);
 
-        JLabel lad = new JLabel("Dodano:");
-        lad.setFont(font1);
-        lad.setForeground(Color.BLUE);
-        lad.setBounds(20, 330, 250, 50);
-        add(lad);
+        JLabel zamLabel = new JLabel("Zamowienie:");
+        zamLabel.setFont(font1);
+        zamLabel.setForeground(Color.BLUE);
+        zamLabel.setBounds(10, 150, 100, 50);
+        add(zamLabel);
 
-        tforder = new JTextField();
-        tforder.setBounds(120, 330, 300, 50);
-        add(tforder);
+        this.tempText="/";
+        zamArea = new JTextArea();
+        JScrollPane sp = new JScrollPane(zamArea);
+        sp.setBounds(100, 150, 320, 50);
+        zamArea.setEditable(false);
+        getContentPane().add(sp);
+        zamArea.setText(this.tempText);
 
-        JLabel lar = new JLabel("Adres:");
-        lar.setFont(font1);
-        lar.setForeground(Color.BLUE);
-        lar.setBounds(20, 400, 250, 50);
-        add(lar);
+        JLabel miasto = new JLabel("Miasto:");
+        miasto.setFont(font1);
+        miasto.setForeground(Color.BLUE);
+        miasto.setBounds(10, 200, 100, 50);
+        add(miasto);
 
-        taadres = new JTextArea();
-        taadres.setBounds(100, 400, 320, 50);
-        taadres.setFont(font1);
-        add(taadres);
+        miastoArea = new JTextArea();
+        miastoArea.setBounds(100, 215, 320, 30);
+        miastoArea.setText("Jelenia Góra");
+        add(miastoArea);
 
-        terminal = new JCheckBox("Terminal");
-        terminal.setBounds(20, 460, 100, 50);
-        terminal.setFont(new Font("Garamond", Font.ITALIC, 15));
+        JLabel ulica = new JLabel("Ulica:");
+        ulica.setFont(font1);
+        ulica.setForeground(Color.BLUE);
+        ulica.setBounds(10, 260, 100, 30);
+        add(ulica);
+
+        ulicaArea = new JTextArea();
+        ulicaArea.setBounds(100, 265, 320, 30);
+        add(ulicaArea);
+
+        JLabel dom = new JLabel("Nr Domu:");
+        dom.setFont(font1);
+        dom.setForeground(Color.BLUE);
+        dom.setBounds(10, 320, 100, 30);
+        add(dom);
+
+        domArea = new JTextArea();
+        domArea.setBounds(100, 320, 50, 30);
+        add(domArea);
+
+        JLabel mieszkanie = new JLabel("Nr Mieszkania:");
+        mieszkanie.setFont(font1);
+        mieszkanie.setForeground(Color.BLUE);
+        mieszkanie.setBounds(190, 320, 150, 30);
+        add(mieszkanie);
+
+        mieszkanieArea = new JTextArea();
+        mieszkanieArea.setBounds(320, 320, 50, 30);
+        add(mieszkanieArea);
+
+        JLabel telefon = new JLabel("Nr Telefonu:");
+        telefon.setFont(font1);
+        telefon.setForeground(Color.BLUE);
+        telefon.setBounds(10, 370, 150, 30);
+        add(telefon);
+
+        phoneArea = new JTextArea();
+        phoneArea.setBounds(100, 370, 320, 30);
+        add(phoneArea);
+
+        JLabel terminal = new JLabel("TERMINAL");
+        terminal.setFont(font1);
         terminal.setForeground(Color.BLUE);
+        terminal.setBounds(10, 425, 150, 30);
         add(terminal);
 
-        border = new JButton("Złóż zamówienie");
-        border.setBounds(140, 460, 270, 50);
+        cbterminal = new JComboBox(termBox);
+        cbterminal.setBounds(130, 420, 100, 40);
+        cbterminal.setSelectedIndex(1);
+        add(cbterminal);
+
+        bwyczysc = new JButton("Wyczysc");
+        bwyczysc.setBounds(10, 490, 120, 50);
+        bwyczysc.addActionListener(this);
+        add(bwyczysc);
+
+        border = new JButton("Dodaj zamówienie");
+        border.setBounds(150, 490, 270, 50);
         border.addActionListener(this);
         add(border);
-
-
-
-
-
 
         JLabel lza = new JLabel("Zamówienia");
         lza.setFont(font);
@@ -203,7 +211,7 @@ public class Kucharz extends JFrame implements ActionListener {
         add(lza);
 
         zamowienia = new OrdersTable();
-        zamowienia.setBounds(450, 100, 500, 500);
+        zamowienia.setBounds(475, 100, 468, 440);
         add(zamowienia);
         selectOrd();
 
@@ -235,13 +243,21 @@ public class Kucharz extends JFrame implements ActionListener {
         zamowienia.model.setData(pizzanoc.mysql().getOrders("SELECT * FROM orders", numOfRows));
     }
 
+    public void clearPanel() {
+        zamArea.setText("/");
+        miastoArea.setText("Jelenia Góra");
+        ulicaArea.setText("");
+        mieszkanieArea.setText("");
+        domArea.setText("");
+        phoneArea.setText("");
+    }
+
     // Obsługa zdarzeń
     @Override
     public void actionPerformed(ActionEvent e) {
         Object o = e.getSource();
         if(o == checkOrder) {
             String tempID = String.valueOf(zamowienia.getIDofSelectedRow());
-            System.out.println(tempID);
             String ordered_products_id[] = pizzanoc.mysql().getOrderedProductsID(
                     "SELECT product_ID FROM ordered_products WHERE order_id = " + tempID);
 
@@ -280,74 +296,38 @@ public class Kucharz extends JFrame implements ActionListener {
 
 
         if (o == bdodaj){  //Dodawanie pizzy
-            pizze.removeAll(pizze);
-            dodatki.removeAll(dodatki);
+            String pizza = (String) cbpizza.getSelectedItem();
+            String rozmiar = (String) cbrozmiar.getSelectedItem();
 
-            if (!cbpizza.getSelectedItem().toString().contains("Pizza")) {
-                String pizza = cbpizza.getSelectedItem().toString();
-                pizze.add(pizza);
-                if (!cbi.getSelectedItem().toString().contains("brak")) {
-                    String dodatek = cbi.getSelectedItem().toString();
-                    dodatki.add(dodatek);
-                    String order1 = pizza + " " + dodatek;
-                    orderList.add(order1);
-                    //TODO: do dodania gotowa pizza + dodatek
-                    return;
-                }
-                orderList.add(pizza);
-                return;
-            }
-            String dod = "";
-            if (!cbi1.getSelectedItem().toString().contains("brak")) {
-                String dodatek = cbi1.getSelectedItem().toString();
-                dodatki.add(dodatek);
-                dod += " " + dodatek;
-            }
-            if (!cbi2.getSelectedItem().toString().contains("brak")) {
-                String dodatek = cbi2.getSelectedItem().toString();
-                dodatki.add(dodatek);
-                dod += " " + dodatek;
-            }
-            if (!cbi3.getSelectedItem().toString().contains("brak")) {
-                String dodatek = cbi3.getSelectedItem().toString();
-                dodatki.add(dodatek);
-                dod += " " + dodatek;
-            }
-            if (!cbi4.getSelectedItem().toString().contains("brak")) {
-                String dodatek = cbi4.getSelectedItem().toString();
-                dodatki.add(dodatek);
-                dod += " " + dodatek;
-            }
-            if (!cbi5.getSelectedItem().toString().contains("brak")) {
-                String dodatek = cbi5.getSelectedItem().toString();
-                dodatki.add(dodatek);
-                dod += " " + dodatek;
-            }
-            orderList.add(" basic " + dod);
-            return;
+            this.tempText += pizza;
+            this.tempText += ",";
+            this.tempText += rozmiar;
+            this.tempText += "/";
 
+            zamArea.setText(tempText);
         }
 
-        if (o == border)
 
-        { //Składanie zamówienia
-            String sOrder = orderList.toString() + " ";
-            String adres = taadres.getText();
-            boolean t = terminal.isSelected();
-            sOrder += " " + adres;
-            if (t) {
-                sOrder += " " + "terminal";
-            }
-            order.add(sOrder);
-            System.out.println("Order" + sOrder);
-            return;
+        if(o == border) {
+            //Adres:
+            String miasto = miastoArea.getText();
+            String ulica = ulicaArea.getText();
+            String dom = domArea.getText();
+            String mieszkanie = mieszkanieArea.getText();
+            String telefon = phoneArea.getText();
 
+            String terminal = (String) cbterminal.getSelectedItem();
+            String zamowienie = zamArea.getText();
+
+            String adress = ulica+"/"+dom+"/"+mieszkanie+"/"+miasto;
+            pizzanoc.mysql().addOrder(adress, telefon, terminal, zamowienie);
+
+            selectOrd();
+            clearPanel();
         }
-        if (o == bwydano)
 
-        { //Wydawanie pizzy z kuchni
-            String id = taid.getText();
-            //Todo zmiana statusu zamówienia o nr id id na wydano
+        if(o == bwyczysc) {
+            clearPanel();
         }
     }
 }

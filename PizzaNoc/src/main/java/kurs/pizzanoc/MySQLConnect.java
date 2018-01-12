@@ -289,4 +289,55 @@ public class MySQLConnect {
             }
         }
     }
+
+    public void addOrder(String adres, String telefon, String terminal, String zamowienie) {
+        try {
+            stmt = connection.createStatement();
+            //GET HIGHEST ID
+            rs = stmt.executeQuery("SELECT ID FROM orders ORDER BY ID DESC LIMIT 0, 1");
+            rsmd = rs.getMetaData();
+            rs.next();
+            String currentID=rs.getString(1);
+            int id = Integer.parseInt(currentID)+1;
+            currentID = Integer.toString(id);
+
+            String query = "INSERT INTO orders(ID, data, status, card_payment, fullpirce, phone_number, adres) VALUES ( "+currentID+" , now() , 'przyjęte' , '"+terminal+"' , 1 , '"+telefon+"' , '"+adres+"' )";
+            stmt.executeUpdate(query);
+
+            String qqq;
+            String[] partsZamowienie = zamowienie.split("/");
+            String[] current;
+
+            for(int i=1; i<partsZamowienie.length;i++) {
+                current = partsZamowienie[i].split(",");
+                qqq = "SELECT ID FROM products WHERE name LIKE '"+current[0]+"' AND diameter = "+current[1];
+
+                rs = stmt.executeQuery(qqq);
+                rsmd = rs.getMetaData();
+                rs.next();
+                query = "INSERT INTO ordered_products VALUES ("+currentID+","+rs.getString(1)+")";
+                stmt.executeUpdate(query);
+            }
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException sqlEx) {
+                } // ignore
+                rs = null;
+            }
+
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException sqlEx) {
+                } // ignore
+                stmt = null;
+            }
+        }
+    }
 }
