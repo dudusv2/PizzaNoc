@@ -52,10 +52,29 @@ CREATE TABLE IF NOT EXISTS `ingredients` (
   `name` varchar(100) DEFAULT NULL,
   `quantity_in_stock` float DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
--- Zrzucanie danych dla tabeli pizzanoc.ingredients: ~0 rows (około)
+-- Zrzucanie danych dla tabeli pizzanoc.ingredients: ~18 rows (około)
 /*!40000 ALTER TABLE `ingredients` DISABLE KEYS */;
+INSERT IGNORE INTO `ingredients` (`ID`, `name`, `quantity_in_stock`) VALUES
+	(1, 'ser', 10),
+	(2, 'szynka', 6),
+	(3, 'pieczarki', 5),
+	(4, 'salami', 2),
+	(5, 'ananas', 2),
+	(6, 'kurczak', 3),
+	(7, 'kukurydza', 1.5),
+	(8, 'papryka', 1),
+	(9, 'pomidor', 2),
+	(10, 'chorizo', 1.5),
+	(11, 'chilli', 0.3),
+	(12, 'oliwki', 0.5),
+	(13, 'ser pleśniowy', 1),
+	(14, 'camembert', 0.6),
+	(15, 'ser feta', 1),
+	(16, 'cebula', 2),
+	(17, 'boczek', 2),
+	(18, 'jajko', 1.5);
 /*!40000 ALTER TABLE `ingredients` ENABLE KEYS */;
 
 -- Zrzut struktury tabela pizzanoc.ordered_products
@@ -68,8 +87,27 @@ CREATE TABLE IF NOT EXISTS `ordered_products` (
   CONSTRAINT `fk_product` FOREIGN KEY (`product_ID`) REFERENCES `products` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Zrzucanie danych dla tabeli pizzanoc.ordered_products: ~0 rows (około)
+-- Zrzucanie danych dla tabeli pizzanoc.ordered_products: ~18 rows (około)
 /*!40000 ALTER TABLE `ordered_products` DISABLE KEYS */;
+INSERT IGNORE INTO `ordered_products` (`order_ID`, `product_ID`) VALUES
+	(1, 1),
+	(1, 3),
+	(1, 8),
+	(1, 4),
+	(2, 52),
+	(2, 1),
+	(2, 4),
+	(3, 15),
+	(3, 56),
+	(3, 60),
+	(3, 3),
+	(4, 13),
+	(4, 14),
+	(4, 1),
+	(5, 2),
+	(5, 3),
+	(5, 4),
+	(5, 55);
 /*!40000 ALTER TABLE `ordered_products` ENABLE KEYS */;
 
 -- Zrzut struktury tabela pizzanoc.orders
@@ -80,32 +118,62 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `fullpirce` decimal(10,2) unsigned NOT NULL,
   `card_payment` enum('tak','nie') NOT NULL,
   `phone_number` varchar(15) NOT NULL,
+  `adres` varchar(250) NOT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 -- Zrzucanie danych dla tabeli pizzanoc.orders: ~5 rows (około)
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` (`ID`, `data`, `status`, `fullpirce`, `card_payment`, `phone_number`) VALUES
-	(1, '2003-02-07 00:00:00', 'przyjęte', 150.00, 'tak', '530134551'),
-	(2, '2005-02-13 00:00:00', 'wysłane', 6346.00, 'tak', '531692381'),
-	(3, '2011-11-05 00:00:00', 'odebrane', 25.00, 'nie', '140924133'),
-	(4, '2016-10-05 00:00:00', 'przyjęte', 7246.00, 'tak', '530923851'),
-	(5, '2003-02-02 00:00:00', 'przyjęte', 142.00, 'nie', '630241551');
+INSERT IGNORE INTO `orders` (`ID`, `data`, `status`, `fullpirce`, `card_payment`, `phone_number`, `adres`) VALUES
+	(1, '2003-02-07 00:00:00', 'nieodebrane', 150.00, 'tak', '530134551', 'Wyczółkowskiego/15/3/Jelenia Góra'),
+	(2, '2005-02-13 00:00:00', 'wysłane', 6346.00, 'tak', '531692381', 'Pijarska/148/17/Jelenia Góra'),
+	(3, '2011-11-05 00:00:00', 'wysłane', 25.00, 'nie', '140924133', 'Osiedle Robotnicze/2/3/Jelenia Góra'),
+	(4, '2016-10-05 00:00:00', 'odebrane', 7246.00, 'tak', '530923851', 'I Maja/12/45/Jelenia Góra'),
+	(5, '2003-02-02 00:00:00', 'przyjęte', 142.00, 'nie', '630241551', 'Szybka/12/1/Jelenia Góra');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 
 -- Zrzut struktury tabela pizzanoc.products
 CREATE TABLE IF NOT EXISTS `products` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) DEFAULT NULL,
-  `price_with_vat` decimal(10,2) DEFAULT NULL,
-  `price_without_vat` decimal(10,2) DEFAULT NULL,
-  `weight` float DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
   `diameter` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8;
 
--- Zrzucanie danych dla tabeli pizzanoc.products: ~0 rows (około)
+-- Zrzucanie danych dla tabeli pizzanoc.products: ~30 rows (około)
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
+INSERT IGNORE INTO `products` (`ID`, `name`, `price`, `diameter`) VALUES
+	(1, 'Margherita', 12.00, 32),
+	(2, 'Funghi', 13.00, 32),
+	(3, 'Prosciutto', 13.00, 32),
+	(4, 'Salami', 14.00, 32),
+	(5, 'Capriciosa', 14.00, 32),
+	(6, 'Hawajska', 14.00, 32),
+	(7, 'Gambino', 15.00, 32),
+	(8, 'Nocny Marek', 15.00, 32),
+	(9, 'Vegetariana', 15.00, 32),
+	(10, 'Kolorowa', 15.00, 32),
+	(11, 'Chilli', 15.00, 32),
+	(12, 'Droga Mleczna', 16.00, 32),
+	(13, 'Księżycowa', 16.00, 32),
+	(14, 'Cztery Sery', 16.00, 32),
+	(15, 'Mamma Mia!', 16.00, 32),
+	(51, 'Margherita', 25.00, 45),
+	(52, 'Funghi', 27.00, 45),
+	(53, 'Prosciutto', 27.00, 45),
+	(54, 'Salami', 28.00, 45),
+	(55, 'Capriciosa', 28.00, 45),
+	(56, 'Hawajska', 28.00, 45),
+	(57, 'Gambino', 30.00, 45),
+	(58, 'Nocny Marek', 32.00, 45),
+	(59, 'Vegetariana', 32.00, 45),
+	(60, 'Kolorowa', 32.00, 45),
+	(61, 'Chilli', 32.00, 45),
+	(62, 'Droga Mleczna', 34.00, 45),
+	(63, 'Księżycowa', 34.00, 45),
+	(64, 'Cztery Sery', 34.00, 45),
+	(65, 'Mamma Mia!', 34.00, 45);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 
 -- Zrzut struktury tabela pizzanoc.product_ingredients
@@ -118,8 +186,60 @@ CREATE TABLE IF NOT EXISTS `product_ingredients` (
   CONSTRAINT `fk_secondProduct` FOREIGN KEY (`product_ID`) REFERENCES `products` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Zrzucanie danych dla tabeli pizzanoc.product_ingredients: ~0 rows (około)
+-- Zrzucanie danych dla tabeli pizzanoc.product_ingredients: ~51 rows (około)
 /*!40000 ALTER TABLE `product_ingredients` DISABLE KEYS */;
+INSERT IGNORE INTO `product_ingredients` (`product_ID`, `ingredient_ID`) VALUES
+	(1, 1),
+	(2, 1),
+	(2, 3),
+	(3, 1),
+	(3, 2),
+	(4, 1),
+	(4, 3),
+	(4, 4),
+	(5, 1),
+	(5, 2),
+	(5, 3),
+	(6, 1),
+	(6, 2),
+	(6, 5),
+	(7, 1),
+	(7, 2),
+	(7, 4),
+	(8, 1),
+	(8, 6),
+	(8, 7),
+	(8, 16),
+	(9, 1),
+	(9, 9),
+	(9, 3),
+	(9, 8),
+	(9, 16),
+	(10, 1),
+	(10, 7),
+	(10, 3),
+	(10, 8),
+	(11, 1),
+	(11, 4),
+	(11, 10),
+	(12, 1),
+	(12, 17),
+	(12, 18),
+	(12, 16),
+	(13, 1),
+	(13, 17),
+	(13, 12),
+	(13, 16),
+	(14, 1),
+	(14, 13),
+	(14, 14),
+	(14, 15),
+	(15, 1),
+	(15, 3),
+	(15, 2),
+	(15, 8),
+	(15, 16),
+	(15, 7);
 /*!40000 ALTER TABLE `product_ingredients` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
